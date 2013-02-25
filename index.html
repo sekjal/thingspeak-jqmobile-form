@@ -6,7 +6,7 @@
 	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.css" />
 	<script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
 	<script src="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.js"></script>
-	<script type="text/javascript">	
+	<script type="text/javascript">		
 		function saveThingspeakSettings() {
 				localStorage.setItem('server', $('#serverinput').val());
 				localStorage.setItem('channel', $('#channelinput').val());
@@ -26,7 +26,7 @@
         $('#channelinput').val(channel);
         $('#writekeyinput').val(writekey);
         
-        $('#thingspeakform').attr('action', server + '/update');
+        //$('#thingspeakform').attr('action', server + '/update');
         $('#writekey').val(writekey);
         return 1;
 		}
@@ -35,6 +35,33 @@
 			console.warn("localStorage cleared");
 			localStorage.clear();
 		}
+		
+		function onSuccess(data, status) {
+			data = $.trim(data);
+			$("#notification").text("Data saved successfully!");
+			$("#notification").popup("open", setTimeout(function() {
+				$('#notification').popup("close");
+				}, 2000));
+		}  
+		function onError(data, status) {
+			$("#notification").text("There has been an error: " + status );
+			$("#notification").popup("open");
+		}       
+  
+		$(document).ready(function() {
+			$("#submittothingspeak").click(function(e,data){
+				var formData = $("#thingspeakform").serialize();
+				$.ajax({
+					type: "POST",
+					url: localStorage.getItem('server') + '/update',
+					cache: false,
+					data: formData,
+					complete: onSuccess(),
+					timeout: 2000
+				});
+				return false;
+			});
+		});
 		
 		$('#home').live('pageinit', function(e,data){
 			var isset = getThingspeakSettings();
@@ -68,6 +95,7 @@
 			<a href="#settings" data-icon="gear" data-iconpos="notext" data-rel="dialog" data-transition="slidedown">Settings</a>
 		</div>
 		<div data-role="content">
+			<div id="notification" class="ui-content" data-history="false" data-role="popup" data-position-to="window" data-theme="e"></div>
 			<form id="thingspeakform">
 				<input id="writekey" type="hidden" name="key"/>
 				<div data-role="collapsible">
@@ -91,7 +119,7 @@
 					<div data-role="fieldcontain"><label for="long">Longitude:</label><input id="long" type="text" name="long"></div>
 					<div data-role="fieldcontain"><label for="elevation">Elevation:</label><input id="elevation" type="text" name="elevation"></div>
 				</div>
-				<div><input type="submit" value="Submit" data-role="button"/></div>
+				<div><button id="submittothingspeak"/>Submit!</button></div>
 			</form>
 		</div>
 	</div>
