@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>ThingSpeak Logger</title> 
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.css" />
+	<script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
+	<script src="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.js"></script>
+	<script type="text/javascript">	
+		function saveThingspeakSettings() {
+				localStorage.setItem('server', $('#serverinput').val());
+				localStorage.setItem('channel', $('#channelinput').val());
+				localStorage.setItem('writekey', $('#writekeyinput').val());
+				getThingspeakSettings();
+		}
+
+		function getThingspeakSettings() {
+			var server = localStorage.getItem('server');
+			var channel = localStorage.getItem('channel');
+			var writekey = localStorage.getItem('writekey');
+			if (server == null || channel == null || writekey == null) {
+				return 0;
+			}
+			
+        $('#serverinput').val(server);
+        $('#channelinput').val(channel);
+        $('#writekeyinput').val(writekey);
+        
+        $('#thingspeakform').attr('action', server + '/update');
+        $('#writekey').val(writekey);
+        return 1;
+		}
+		
+		function clearThingspeakSettings() {
+			console.warn("localStorage cleared");
+			localStorage.clear();
+		}
+		
+		$('#home').live('pageinit', function(e,data){
+			var isset = getThingspeakSettings();
+			if (isset) {
+				console.warn("all set!");
+			} else {
+				$.mobile.changePage('#settings','slidedown');
+				console.warn("not set");	
+			}
+		});
+		
+		$('#settings').live('pageinit', function(e,data) {
+			$('#savesettings').click(function(e) {
+				saveThingspeakSettings();
+				e.preventDefault();
+				$.mobile.changePage('#home');
+			});
+			$('#clearsettings').click(function(e) {
+				clearThingspeakSettings();
+				e.preventDefault();
+				$.mobile.changePage('#home');
+			});
+		});
+		
+	</script>
+</head>
+<body>
+	<div data-role="page" id="home">
+		<div data-role="header">
+			<h2>ThingSpeak</h2>
+			<a href="#settings" data-icon="gear" data-iconpos="notext" data-rel="dialog" data-transition="slidedown">Settings</a>
+		</div>
+		<div data-role="content">
+			<form id="thingspeakform">
+				<input id="writekey" type="hidden" name="key"/>
+				<div data-role="collapsible">
+					<h3>Status</h3>
+					<div data-role="fieldcontain"><label for="status">Status:</label><input id="status" type="text" name="status" data-mini="true"/></div>
+				</div>
+				<div data-role="collapsible" data-collapsed="false">
+					<h3>Fields</h3>
+					<div data-role="fieldcontain"><label for="field1">Field 1:</label><input id="field1" type="range" min="0" max="10" value="5" name="field1" data-mini="true" data-highlight="true"></div>
+					<div data-role="fieldcontain"><label for="field2">Field 2:</label><input id="field2" type="range" min="0" max="10" value="5" name="field2" data-mini="true" data-highlight="true"></div>
+					<div data-role="fieldcontain"><label for="field3">Field 3:</label><input id="field3" type="range" min="0" max="10" value="5" name="field3" data-mini="true" data-highlight="true"></div>
+					<div data-role="fieldcontain"><label for="field4">Field 4:</label><input id="field4" type="range" min="0" max="10" value="5" name="field4" data-mini="true" data-highlight="true"></div>
+					<div data-role="fieldcontain"><label for="field5">Field 5:</label><input id="field5" type="range" min="0" max="10" value="5" name="field5" data-mini="true" data-highlight="true"></div>
+					<div data-role="fieldcontain"><label for="field6">Field 6:</label><input id="field6" type="range" min="0" max="10" value="5" name="field6" data-mini="true" data-highlight="true"></div>
+					<div data-role="fieldcontain"><label for="field7">Field 7:</label><input id="field7" type="range" min="0" max="10" value="5" name="field7" data-mini="true" data-highlight="true"></div>
+					<div data-role="fieldcontain"><label for="field8">Field 8:</label><input id="field8" type="range" min="0" max="10" value="5" name="field8" data-mini="true" data-highlight="true"></div>
+				</div>
+				<div data-role="collapsible">
+					<h3>Geolocation</h3>
+					<div data-role="fieldcontain"><label for="lat">Latitude:</label><input id="lat" type="text" name="lat"></div>
+					<div data-role="fieldcontain"><label for="long">Longitude:</label><input id="long" type="text" name="long"></div>
+					<div data-role="fieldcontain"><label for="elevation">Elevation:</label><input id="elevation" type="text" name="elevation"></div>
+				</div>
+				<div><input type="submit" value="Submit" data-role="button"/></div>
+			</form>
+		</div>
+	</div>
+	<div data-role="dialog" id="settings">
+		<div data-role="header">
+			<h2>Settings</h2>
+		</div>
+		<div data-role="content">
+		<form  id="settingsform">
+			<div data-role="fieldcontain"><label for="server">Server URL:</label><input id="serverinput" name="server" type="text"/></div>
+			<div data-role="fieldcontain"><label for="channel">Channel:</label><input id="channelinput" name="channel" type="text"/></div>
+			<div data-role="fieldcontain"><label for="writekey">Write Key:</label><input id="writekeyinput" name="writekey" type="text"/></div>
+			<button id="savesettings">Store Locally</button>
+			<button id="clearsettings">Wipe Settings</button>
+		</form>
+		</div>
+	</div>
+</body>
+</html>
